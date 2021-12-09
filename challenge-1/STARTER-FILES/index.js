@@ -1,7 +1,7 @@
 let timeoutFunction;
 let timerIsStarted = false;
-let totalTime = 123;
-let timeLeft = 123;
+let totalTime = 15;
+let timeLeft = 15;
 
 const prettyTimeNumber = (number) => String(number).padStart(2, "0");
 
@@ -12,6 +12,7 @@ const getMinutesAndSeconds = time => {
   return {minutes, seconds}
 };
 
+const timerRing = document.querySelector(".ring");
 const minutesTimerDisplayElement = document.querySelector(".minutes");
 const secondsTimerDisplayElement = document.querySelector(".seconds");
 const startStopButton = document.querySelector(".start");
@@ -29,25 +30,37 @@ secondsTimerDisplayElement.textContent = prettyTimeNumber(secondsLeft);
 startStopButton.addEventListener("click", () => {
   timerIsStarted = !timerIsStarted;
   startStopButton.textContent = timerIsStarted ? "stop" : "start";
-  timerIsStarted && timeLeft >= 0 ? startCountDown() : window.clearTimeout(timeoutFunction);;
+  timerIsStarted && timeLeft >= 0 ? startCountDown() : stopCountDown(false);
 });
 
 const startCountDown = () => { 
   timeoutFunction = setInterval(() => {
+    timeLeft--;
     if(timeLeft > 0) {
-      timeLeft--
-      const {
-        minutes: minutesLeft,
-        seconds: secondsLeft
-      } = getMinutesAndSeconds(timeLeft);
-
-      minutesTimerDisplayElement.textContent = prettyTimeNumber(minutesLeft);
-      secondsTimerDisplayElement.textContent = prettyTimeNumber(secondsLeft);
+      updateTimer(timeLeft);
+      if(timeLeft <= 10 && !timerRing.classList.contains("ending")) {
+        timerRing.classList.add("ending");
+      }
     } else {
-      window.clearTimeout(timeoutFunction);
+      stopCountDown(true);
     }
   }, 1000);
 };
+
+const stopCountDown = ended => {
+  window.clearTimeout(timeoutFunction)
+  if(ended) alert("YOU'RE TIME IS UP! STOP WORKING AND GO HYDRATE!")
+}
+
+const updateTimer = timeLeft => {
+  const {
+    minutes: minutesLeft,
+    seconds: secondsLeft
+  } = getMinutesAndSeconds(timeLeft);
+
+  minutesTimerDisplayElement.textContent = prettyTimeNumber(minutesLeft);
+  secondsTimerDisplayElement.textContent = prettyTimeNumber(secondsLeft);
+}
 
 /**
  * What do we actually need to do here?
